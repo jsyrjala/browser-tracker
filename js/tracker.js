@@ -112,12 +112,20 @@ function feedbackError(error) {
     addCssClass(FEEDBACK, "errorFeedback");
 }
 
+
+function formatCoordinate(coord) {
+    var s = "" + coord;
+    if(s.length > 12) {
+	return s.substring(12);
+    }
+    return s;
+}
 function displayLocation(position, message) {
     var msg = "Location: " + position.coords.latitude + ', ' + position.coords.longitude + " " + message;
     $("#locationArea").show();
     $("#trackingStatus").html(message);
-    $(".latitude").html(position.coords.latitude);
-    $(".longitude").html(position.coords.longitude);
+    $(".latitude").html(formatCoordinate(position.coords.latitude));
+    $(".longitude").html(formatCoordinate(position.coords.longitude));
     geocode(position.coords,
 	    function(data) {
 		console.log("geocode:", data);
