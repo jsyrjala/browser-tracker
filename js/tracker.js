@@ -118,6 +118,29 @@ function displayLocation(position, message) {
     $("#trackingStatus").html(message);
     $(".latitude").html(position.coords.latitude);
     $(".longitude").html(position.coords.longitude);
+    geocode(position.coords,
+	    function(data) {
+		console.log("geocode:", data);
+		if(!data.address) {
+		    $("#addressArea").hide();
+		    return;
+		}
+		$("#addressArea").show();
+		function showField(sourceField, destFieldSelector) {
+		    var sourceData = data.address[sourceField];
+		    var destField = $(destFieldSelector);
+		    if(sourceData) {
+			destField.html(sourceData);
+			destField.show();
+		    } else {
+			destField.hide();
+		    }
+		}
+		showField("road", ".street-address");
+		showField("postcode", ".postal-code");
+		showField("city", ".locality");
+		showField("country", ".country-name");
+	    });
 }
 
 function sendLocationMessage(position, message) {
@@ -127,6 +150,14 @@ function sendLocationMessage(position, message) {
     };
     sendAjaxRequest(URL, jsonMessage);
     displayLocation(position, message);
+}
+
+// geocoding
+function geocode(coords, successCallback, errorCallback) {
+    console.log("INFO: sendAjaxMessage(", message, ")");
+    $.get('http://nominatim.openstreetmap.org/reverse',
+	  {format: 'json', lat: coords.latitude, lon: coords.longitude}, 
+	  successCallback);
 }
 
 function enableLocationTracking() {
