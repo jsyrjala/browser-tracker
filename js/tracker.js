@@ -112,11 +112,10 @@ function feedbackError(error) {
     addCssClass(FEEDBACK, "errorFeedback");
 }
 
-
 function formatCoordinate(coord) {
     var s = "" + coord;
-    if(s.length > 12) {
-	return s.substring(0, 12);
+    if(s.length > 11) {
+	return s.substring(0, 11);
     }
     return s;
 }
