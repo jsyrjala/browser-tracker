@@ -116,7 +116,7 @@ function feedbackError(error) {
 function formatCoordinate(coord) {
     var s = "" + coord;
     if(s.length > 12) {
-	return s.substring(12);
+	return s.substring(0, 12);
     }
     return s;
 }
