@@ -114,7 +114,10 @@ function feedbackError(error) {
 
 function displayLocation(position, message) {
     var msg = "Location: " + position.coords.latitude + ', ' + position.coords.longitude + " " + message;
-    feedbackInfo(msg);
+    $("#locationArea").show();
+    $("#trackingStatus").html(message);
+    $(".latitude").html(position.coords.latitude);
+    $(".longitude").html(position.coords.longitude);
 }
 
 function sendLocationMessage(position, message) {
