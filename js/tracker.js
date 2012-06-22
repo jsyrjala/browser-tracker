@@ -16,14 +16,14 @@ function bindTrackButton(buttonSelector, feedbackSelector, startTitle, stopTitle
     FEEDBACK = $(feedbackSelector);
     button.removeAttr('disabled');
     button.click(function() {
-	    if(isTracking()) {
-		stopTracking($(this));
-		button.html(startTitle);
-	    } else {
-		startTracking($(this));
-		button.html(stopTitle);
-	    }
-	});
+	if(isTracking()) {
+	    stopTracking($(this));
+	    button.html(startTitle);
+	} else {
+	    startTracking($(this));
+	    button.html(stopTitle);
+	}
+    });
 }
 
 function isTrackingSupported() {
@@ -53,10 +53,10 @@ function isTracking() {
 
 function sendLocation(message) {
     obtainLocation(function(position) {
-	    sendLocationMessage(position, message);
-	    scheduleMessageSend();
-	},
-	handleLocationError);
+	sendLocationMessage(position, message);
+	scheduleMessageSend();
+    },
+		   handleLocationError);
 }
 
 
@@ -64,8 +64,8 @@ function obtainLocation(successHandler, errorHandler) {
     navigator.geolocation.getCurrentPosition(successHandler, errorHandler,
 					     {
 						 enableHighAccuracy: true,
-						     timeout: TIMEOUT
-						     });
+						 timeout: TIMEOUT
+					     });
 }
 
 function handleLocationError(error) {
@@ -144,7 +144,7 @@ function enableLocationTracking() {
 							       maximumAge: 10000,
 							       timeout: TIMEOUT
 							   }
-							   );
+							  );
 }
 
 function disableLocationTracking() {
@@ -171,21 +171,21 @@ function scheduleMessageSend() {
 function sendAjaxRequest(url, message, successCallback, errorCallback) {
     console.log("INFO: sendAjaxMessage(", message, ")");
     $.ajax({type: 'POST',
-		url: url,
-		//data: JSON.stringify(message),
-		data: message,
-		success: successCallback,
-		error: errorCallback,
-		dataType: 'json',
-		processData: false
-		//contentType: 'application/json'
-	});
-
+	    url: url,
+	    //data: JSON.stringify(message),
+	    data: message,
+	    success: successCallback,
+	    error: errorCallback,
+	    dataType: 'json',
+	    processData: false
+	    //contentType: 'application/json'
+	   });
+    
 }
 
 /**
    Message Generation
- */
+*/
 function generateMACBaseString(message) {
     var keys = [];
     for(var key in message) {
@@ -216,7 +216,7 @@ function generateJsonMessage(trackerCode, sharedSecret, position, message) {
     if(message) {
 	trackerMessage["X-message"] = message;
     }
-
+    
     function addField(srcObject, destObject, srcField, destField) {
 	if(srcObject[srcField]) {
 	    destObject[destField] = "" + srcObject[srcField];
