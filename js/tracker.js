@@ -11,6 +11,8 @@ var FREQUENCY = 30000;
 var URL = 'http://dev-server.ruuvitracker.fi/api/v1-dev/events';
 //var URL = 'http://localhost:9000/api/v1-dev/events';
 
+var ENABLE_RUUVITRACKER = false;
+
 function bindTrackButton(buttonSelector, feedbackSelector, startTitle, stopTitle) {
     var button = $(buttonSelector);
     FEEDBACK = $(feedbackSelector);
@@ -127,7 +129,6 @@ function displayLocation(position, message) {
     $(".longitude").html(formatCoordinate(position.coords.longitude));
     geocode(position.coords,
 	    function(data) {
-		console.log("geocode:", data);
 		if(!data.address) {
 		    $("#addressArea").hide();
 		    return;
@@ -151,17 +152,22 @@ function displayLocation(position, message) {
 }
 
 function sendLocationMessage(position, message) {
+    displayLocation(position, message);
+    if(ENABLE_RUUVITRACKER) {
+	sendToServer(position, message);
+    }
+}
+
+function sendToServer(position, message) {
     jsonMessage = generateJsonMessage('foobar', 'foobar', position, message);
     var logCallback = function(data, textStatus, jqXHR) {
 	console.log("AJAX sent:", data, textStatus, jqXHR);
     };
     sendAjaxRequest(URL, jsonMessage);
-    displayLocation(position, message);
 }
 
 // geocoding
 function geocode(coords, successCallback, errorCallback) {
-    console.log("INFO: sendAjaxMessage(", message, ")");
     $.get('http://nominatim.openstreetmap.org/reverse',
 	  {format: 'json', lat: coords.latitude, lon: coords.longitude}, 
 	  successCallback);
@@ -211,6 +217,7 @@ function scheduleMessageSend() {
 
 function sendAjaxRequest(url, message, successCallback, errorCallback) {
     console.log("INFO: sendAjaxMessage(", message, ")");
+    // TODO use json messages, but server doesn't support it correctly
     $.ajax({type: 'POST',
 	    url: url,
 	    //data: JSON.stringify(message),
@@ -248,7 +255,8 @@ function generateMAC(message, sharedSecret) {
 }
 
 function generateJsonMessage(trackerCode, sharedSecret, position, message) {
-    // TODO session_code
+    // TODO add session_code 
+    // generate on first request, and keep it same for rest of the session
     trackerMessage = {
 	version: 1,
 	tracker_code: trackerCode,
@@ -265,6 +273,7 @@ function generateJsonMessage(trackerCode, sharedSecret, position, message) {
     }
     if(position && position.coords) {
 	var c = position.coords;
+	// TODO doesn't work yet. RuuviTracker doesn't support yet decimal coordinates
 	//addField(c, trackerMessage, "latitude", "latitude");
 	//addField(c, trackerMessage, "longitude", "longitude");
 	trackerMessage.latitude="4916.46,N"; 
