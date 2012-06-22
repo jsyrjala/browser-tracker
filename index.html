@@ -43,13 +43,14 @@
     </p>
   </header>
   <div role="main">
-    <p id="help">
+    <button id="helpButton">Help</button>
+    <div id="help" style="display: none;">
       <ol>
 	<li>Click <strong>Start Tracking</strong> -> browser will send your location to RuuviTracker every few moments.</li>
 	<li>If you see something interesting or have some thoughts to share, write a message to the box. The message will be attached to your location.</li>
-	<li>When you don't feel like to be tracked any more, click <strong>Stop Tracking</strong>
+	<li>When you don't feel like to be tracked any more, click <strong>Stop Tracking</strong></li>
       </ol>
-    </p>
+    </div>
     <p>
       <button id="trackButton" disabled="disabled">Start Tracking</button>
     </p>
@@ -92,7 +93,12 @@
   <script src="js/script.js"></script>
   <script src="js/tracker.js"></script>
   <script>
-    bindTrackButton('#trackButton', '#feedbackArea', 'Start Tracking', 'Stop Tracking');
+  bindTrackButton('#trackButton', '#feedbackArea', 'Start Tracking',
+  'Stop Tracking');
+  $("#helpButton").click(function() {
+     var helpArea = $('#help');
+     helpArea.fadeToggle();
+  });
   </script>
   <!-- end scripts -->
 
