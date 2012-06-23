@@ -37,32 +37,36 @@ function isTrackingSupported() {
 
 function startTracking(button) {
     console.log("startTracking() ", button);
+    $("#trackingStatus").html("Tracking started " + new Date().toISOString());
+    showCurrentOperation("Initializing tracking.");
     IS_TRACKING = true;
-    scheduleMessageSend();
-    //enableLocationTracking();
+    //scheduleMessageSend();
+    enableLocationTracking();
 }
 
 function stopTracking(button) {
     console.log("stopTracking()", button);
+    showCurrentOperation("Tracking stopped.");
+    $("#trackingStatus").html("Tracking stopped " + new Date().toISOString());
     IS_TRACKING = false;
-    unscheduleMessageSend();
-    //disableLocationTracking();
+    //unscheduleMessageSend();
+    disableLocationTracking();
 }
 
 function isTracking() {
     return IS_TRACKING;
 }
 
-function sendLocation(message) {
-    obtainLocation(function(position) {
+function getCurrentLocation(message) {
+    obtainCurrentLocation(function(position) {
 	sendLocationMessage(position, message);
 	scheduleMessageSend();
     },
-		   handleLocationError);
+			  handleLocationError);
 }
 
 
-function obtainLocation(successHandler, errorHandler) {
+function obtainCurrentLocation(successHandler, errorHandler) {
     navigator.geolocation.getCurrentPosition(successHandler, errorHandler,
 					     {
 						 enableHighAccuracy: true,
@@ -102,6 +106,11 @@ function addCssClass(object, cssClass) {
 	object.attr('class', cssClass);
     }
 } 
+
+function showCurrentOperation(message) {
+    $("#currentOperation").html(message);
+}
+
 function feedbackInfo(message) {
     console.log("INFO: ", message);
     FEEDBACK.html(message);
@@ -124,16 +133,25 @@ function formatCoordinate(coord) {
 function displayLocation(position, message) {
     var msg = "Location: " + position.coords.latitude + ', ' + position.coords.longitude + " " + message;
     $("#locationArea").show();
-    $("#trackingStatus").html(message);
+    $("#feedbackArea").html(message);
     $(".latitude").html(formatCoordinate(position.coords.latitude));
     $(".longitude").html(formatCoordinate(position.coords.longitude));
     geocode(position.coords,
 	    function(data) {
+		showCurrentOperation("Sleeping.");
 		if(!data.address) {
 		    $("#addressArea").hide();
 		    return;
 		}
 		$("#addressArea").show();
+
+		if(data.display_name){
+		    $("#compoundAddress").html(data.display_name);
+		    $("#compoundAddress").show();
+		} else {
+		    $("#compoundAddress").hide();
+		}
+
 		function showField(sourceField, destFieldSelector) {
 		    var sourceData = data.address[sourceField];
 		    var destField = $(destFieldSelector);
@@ -159,6 +177,7 @@ function sendLocationMessage(position, message) {
 }
 
 function sendToServer(position, message) {
+    showCurrentOperation("Sending data to RuuviTracker server.");
     jsonMessage = generateJsonMessage('foobar', 'foobar', position, message);
     var logCallback = function(data, textStatus, jqXHR) {
 	console.log("AJAX sent:", data, textStatus, jqXHR);
@@ -168,21 +187,26 @@ function sendToServer(position, message) {
 
 // geocoding
 function geocode(coords, successCallback, errorCallback) {
+    showCurrentOperation("Geocoding coordinates.");
     $.get('http://nominatim.openstreetmap.org/reverse',
 	  {format: 'json', lat: coords.latitude, lon: coords.longitude}, 
-	  successCallback);
+	  function(data) {
+	      showCurrentOperation("Geocoding coordinates. Done.");
+	      successCallback(data);
+	  });
 }
 
 function enableLocationTracking() {
-    var firstMessage = true;
+    
     var onSuccess = function(position) {
-	if(firstMessage) {
-	    firstMessage = false;
-	    sendLocationMessage(position, "Tracking started");
-	} else {
-	    sendLocationMessage(position);
-	}
+	showCurrentOperation("Fetching location. Done.");
+	sendLocationMessage(position);
     }
+    var onError = function(error) {
+	showCurrentOperation("Fetching location. Failed.");
+	handleLocationError(data);
+    };
+    showCurrentOperation("Fetching location.");
     LOCATION_TRACKER = navigator.geolocation.watchPosition(onSuccess, 
 							   handleLocationError,
 							   {
@@ -209,9 +233,9 @@ function unscheduleMessageSend() {
 function scheduleMessageSend() {
     console.log("INFO: scheduling message send");
     unscheduleMessageSend();
-    sendLocation("Tracking started");
-    MESSAGE_SCHEDULER = setTimeout(function() {sendLocation() }, FREQUENCY);
-    //MESSAGE_SCHEDULER = setInterval(function() {sendLocation() }, FREQUENCY);
+    getCurrentLocation("Tracking started");
+    MESSAGE_SCHEDULER = setTimeout(function() {getCurrentLocation() }, FREQUENCY);
+    //MESSAGE_SCHEDULER = setInterval(function() {getCurrentLocation() }, FREQUENCY);
 }
 
 
