@@ -1,7 +1,5 @@
 var IS_TRACKING = false;
  
-var MESSAGE_SCHEDULER = null;
-
 var LOCATION_TRACKER = null;
 
 var FEEDBACK = null;
@@ -40,7 +38,6 @@ function startTracking(button) {
     $("#trackingStatus").html("Tracking started " + new Date().toISOString());
     showCurrentOperation("Initializing tracking.");
     IS_TRACKING = true;
-    //scheduleMessageSend();
     enableLocationTracking();
 }
 
@@ -49,29 +46,11 @@ function stopTracking(button) {
     showCurrentOperation("Tracking stopped.");
     $("#trackingStatus").html("Tracking stopped " + new Date().toISOString());
     IS_TRACKING = false;
-    //unscheduleMessageSend();
     disableLocationTracking();
 }
 
 function isTracking() {
     return IS_TRACKING;
-}
-
-function getCurrentLocation(message) {
-    obtainCurrentLocation(function(position) {
-	sendLocationMessage(position, message);
-	scheduleMessageSend();
-    },
-			  handleLocationError);
-}
-
-
-function obtainCurrentLocation(successHandler, errorHandler) {
-    navigator.geolocation.getCurrentPosition(successHandler, errorHandler,
-					     {
-						 enableHighAccuracy: true,
-						 timeout: TIMEOUT
-					     });
 }
 
 function handleLocationError(error) {
@@ -222,23 +201,6 @@ function disableLocationTracking() {
     navigator.geolocation.clearWatch(LOCATION_TRACKER);
 }
 
-function unscheduleMessageSend() {
-    if(MESSAGE_SCHEDULER) {
-	//clearInterval(MESSAGE_SCHEDULER);
-	clearTimeout(MESSAGE_SCHEDULER);
-	MESSAGE_SCHEDULER = null;
-    }
-}
-
-function scheduleMessageSend() {
-    console.log("INFO: scheduling message send");
-    unscheduleMessageSend();
-    getCurrentLocation("Tracking started");
-    MESSAGE_SCHEDULER = setTimeout(function() {getCurrentLocation() }, FREQUENCY);
-    //MESSAGE_SCHEDULER = setInterval(function() {getCurrentLocation() }, FREQUENCY);
-}
-
-
 function sendAjaxRequest(url, message, successCallback, errorCallback) {
     console.log("INFO: sendAjaxMessage(", message, ")");
     // TODO use json messages, but server doesn't support it correctly
@@ -284,7 +246,7 @@ function generateJsonMessage(trackerCode, sharedSecret, position, message) {
     trackerMessage = {
 	version: 1,
 	tracker_code: trackerCode,
-	time: new Date().toISOString()
+	time: new Date(position.timestamp).toISOString()
     };
     if(message) {
 	trackerMessage["X-message"] = message;
