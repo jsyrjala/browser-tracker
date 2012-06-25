@@ -9,7 +9,7 @@ var FREQUENCY = 30000;
 var URL = 'http://dev-server.ruuvitracker.fi/api/v1-dev/events';
 //var URL = 'http://localhost:9000/api/v1-dev/events';
 
-var ENABLE_RUUVITRACKER = false;
+var ENABLE_RUUVITRACKER = true;
 
 function bindTrackButton(buttonSelector, feedbackSelector, startTitle, stopTitle) {
     var button = $(buttonSelector);
