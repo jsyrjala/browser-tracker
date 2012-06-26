@@ -74,7 +74,6 @@ function handleLocationError(error) {
     } else {
 	feedbackError(error);
     }
-    scheduleMessageSend();
 }
 
 
