@@ -211,7 +211,7 @@ function sendAjaxRequest(url, message, successCallback, errorCallback) {
 	    success: successCallback,
 	    error: errorCallback,
 	    dataType: 'json',
-	    processData: false
+	    processData: false,
 	    contentType: 'application/json'
 	   });
 }
