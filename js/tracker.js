@@ -6,8 +6,9 @@ var FEEDBACK = null;
 
 var TIMEOUT = 20000;
 var FREQUENCY = 30000;
-var URL = 'http://dev-server.ruuvitracker.fi/api/v1-dev/events';
+//var URL = 'http://dev-server.ruuvitracker.fi/api/v1-dev/events';
 //var URL = 'http://localhost:9000/api/v1-dev/events';
+var URL = 'http://ruuvi-server.herokuapp.com/api/v1-dev/events';
 
 var ENABLE_RUUVITRACKER = true;
 
