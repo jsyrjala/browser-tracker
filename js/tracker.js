@@ -204,18 +204,16 @@ function disableLocationTracking() {
 
 function sendAjaxRequest(url, message, successCallback, errorCallback) {
     console.log("INFO: sendAjaxMessage(", message, ")");
-    // TODO use json messages, but server doesn't support it correctly
     $.ajax({type: 'POST',
 	    url: url,
-	    //data: JSON.stringify(message),
+	    data: JSON.stringify(message),
 	    data: message,
 	    success: successCallback,
 	    error: errorCallback,
 	    dataType: 'json',
 	    processData: false
-	    //contentType: 'application/json'
+	    contentType: 'application/json'
 	   });
-    
 }
 
 /**
