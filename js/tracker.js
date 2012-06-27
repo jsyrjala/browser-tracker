@@ -6,9 +6,9 @@ var FEEDBACK = null;
 
 var TIMEOUT = 20000;
 var FREQUENCY = 30000;
-//var URL = 'http://dev-server.ruuvitracker.fi/api/v1-dev/events';
-//var URL = 'http://localhost:9000/api/v1-dev/events';
-var URL = 'http://ruuvi-server.herokuapp.com/api/v1-dev/events';
+var URL = 'http://dev-server.ruuvitracker.fi/api/v1-dev/events';
+//var URL = 'http://localhost:3000/api/v1-dev/events';
+//var URL = 'http://ruuvi-server.herokuapp.com/api/v1-dev/events';
 
 var ENABLE_RUUVITRACKER = true;
 
@@ -158,10 +158,14 @@ function sendLocationMessage(position, message) {
 function sendToServer(position, message) {
     showCurrentOperation("Sending data to RuuviTracker server.");
     jsonMessage = generateJsonMessage('foobar', 'foobar', position, message);
-    var logCallback = function(data, textStatus, jqXHR) {
-	console.log("AJAX sent:", data, textStatus, jqXHR);
+    var onSuccess = function(data, textStatus) {
+	console.log("AJAX sent, SUCCESS: ", data, textStatus);
     };
-    sendAjaxRequest(URL, jsonMessage);
+    var onError = function(data, textStatus, jqXHR) {
+	console.log("AJAX sent, FAILURE: ", textStatus, jqXHR);
+    };
+    
+    sendAjaxRequest(URL, jsonMessage, onSuccess, onError);
 }
 
 // geocoding
@@ -202,22 +206,17 @@ function disableLocationTracking() {
 }
 
 function sendAjaxRequest(url, message, successCallback, errorCallback) {
-    console.log("INFO: sendAjaxMessage(", message, ")");
     $.ajax({type: 'POST',
 	    url: url,
-	    data: JSON.stringify(message),
 	    data: message,
 	    success: successCallback,
-	    error: errorCallback,
-	    dataType: 'json',
-	    processData: false,
-	    contentType: 'application/json'
+	    error: errorCallback
 	   });
 }
 
 /**
-   Message Generation
-*/
+ *   Message Generation
+ */
 function generateMACBaseString(message) {
     var keys = [];
     for(var key in message) {
