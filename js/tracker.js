@@ -256,11 +256,8 @@ function generateJsonMessage(trackerCode, sharedSecret, position, message) {
     }
     if(position && position.coords) {
 	var c = position.coords;
-	// TODO doesn't work yet. RuuviTracker doesn't support yet decimal coordinates
-	//addField(c, trackerMessage, "latitude", "latitude");
-	//addField(c, trackerMessage, "longitude", "longitude");
-	trackerMessage.latitude="4916.46,N"; 
-	trackerMessage.longitude="12311.12,W";
+	addField(c, trackerMessage, "latitude", "latitude");
+	addField(c, trackerMessage, "longitude", "longitude");
 	addField(c, trackerMessage, "altitude", "altitude");
 	addField(c, trackerMessage, "accuracy", "accuracy");
 	addField(c, trackerMessage, "heading", "heading");
