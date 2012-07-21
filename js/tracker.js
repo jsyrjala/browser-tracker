@@ -6,11 +6,12 @@ var FEEDBACK = null;
 
 var TIMEOUT = 20000;
 var FREQUENCY = 30000;
-var URL = 'http://dev-server.ruuvitracker.fi/api/v1-dev/events';
+//var URL = 'http://dev-server.ruuvitracker.fi/api/v1-dev/events';
 //var URL = 'http://localhost:3000/api/v1-dev/events';
-//var URL = 'http://ruuvi-server.herokuapp.com/api/v1-dev/events';
+var URL = 'http://ruuvi-server.herokuapp.com/api/v1-dev/events';
 
 var ENABLE_RUUVITRACKER = true;
+var SESSION_CODE = 'browser-tracker-' + new Date().toISOString();
 
 function bindTrackButton(buttonSelector, feedbackSelector, startTitle, stopTitle) {
     var button = $(buttonSelector);
@@ -238,12 +239,12 @@ function generateMAC(message, sharedSecret) {
 }
 
 function generateJsonMessage(trackerCode, sharedSecret, position, message) {
-    // TODO add session_code 
     // generate on first request, and keep it same for rest of the session
     trackerMessage = {
 	version: 1,
 	tracker_code: trackerCode,
-	time: new Date(position.timestamp).toISOString()
+	time: new Date(position.timestamp).toISOString(),
+	session_code: SESSION_CODE
     };
     if(message) {
 	trackerMessage["X-message"] = message;
