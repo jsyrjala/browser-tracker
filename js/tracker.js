@@ -260,7 +260,8 @@ function generateJsonMessage(trackerCode, sharedSecret, position, message) {
 	var c = position.coords;
 	addField(c, trackerMessage, "latitude", "latitude");
 	addField(c, trackerMessage, "longitude", "longitude");
-	addField(c, trackerMessage, "altitude", "altitude");
+	// TODO wrong format, decimal expected in server
+        //addField(c, trackerMessage, "altitude", "altitude");
 	addField(c, trackerMessage, "accuracy", "accuracy");
 	addField(c, trackerMessage, "heading", "heading");
 	addField(c, trackerMessage, "speed", "speed");
