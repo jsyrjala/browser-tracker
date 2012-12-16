@@ -260,12 +260,11 @@ function generateJsonMessage(trackerCode, sharedSecret, position, message) {
 	var c = position.coords;
 	addField(c, trackerMessage, "latitude", "latitude");
 	addField(c, trackerMessage, "longitude", "longitude");
-	// TODO wrong format, decimal expected in server
-        //addField(c, trackerMessage, "altitude", "altitude");
+        addField(c, trackerMessage, "altitude", "altitude");
 	addField(c, trackerMessage, "accuracy", "accuracy");
 	addField(c, trackerMessage, "heading", "heading");
 	addField(c, trackerMessage, "speed", "speed");
-	addField(c, trackerMessage, "altitudeAccuracy", "altitudeAccuracy");
+	addField(c, trackerMessage, "altitudeAccuracy", "vertical_accuracy");
     }
     trackerMessage.mac = generateMAC(trackerMessage, sharedSecret);
     return trackerMessage;
