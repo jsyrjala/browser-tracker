@@ -156,10 +156,10 @@ function displayLocation(position, message) {
 function sendLocationMessage(position, message) {
     displayLocation(position, message);
     var now = new Date().getTime();
-    var prevSendTime = latestLocation.sendTime || 0;
+    var prevSendTime = latestLocation.prevSendTime || 0;
     latestLocation.position = position;
 
-    if(ENABLE_RUUVITRACKER && (now > prevSendTime + SEND_PERIOD) ) {
+    if(ENABLE_RUUVITRACKER && now > (prevSendTime + SEND_PERIOD) ) {
         latestLocation.prevSendTime = now;
 	sendToServer(position, message);
     }
