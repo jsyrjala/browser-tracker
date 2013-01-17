@@ -6,6 +6,7 @@ var FEEDBACK = null;
 
 var TIMEOUT = 20000;
 var FREQUENCY = 30000;
+var SEND_PERIOD = 10 * 1000;
 //var URL = 'http://dev-server.ruuvitracker.fi/api/v1-dev/events';
 //var URL = 'http://localhost:3000/api/v1-dev/events';
 var URL = 'http://198.61.201.6:8000/api/v1-dev/events';
@@ -13,6 +14,8 @@ var URL = 'http://198.61.201.6:8000/api/v1-dev/events';
 
 var ENABLE_RUUVITRACKER = true;
 var SESSION_CODE = 'browser-tracker-' + new Date().toISOString();
+
+var latestLocation = {};
 
 function bindTrackButton(buttonSelector, feedbackSelector, startTitle, stopTitle) {
     var button = $(buttonSelector);
@@ -152,7 +155,12 @@ function displayLocation(position, message) {
 
 function sendLocationMessage(position, message) {
     displayLocation(position, message);
-    if(ENABLE_RUUVITRACKER) {
+    var now = new Date().getTime();
+    var prevSendTime = latestLocation.sendTime || 0;
+    latestLocation.position = position;
+
+    if(ENABLE_RUUVITRACKER && (now > prevSendTime + SEND_PERIOD) ) {
+        latestLocation.prevSendTime = now;
 	sendToServer(position, message);
     }
 }
